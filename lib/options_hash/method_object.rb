@@ -2,7 +2,7 @@ require 'options_hash'
 
 class OptionsHash::MethodObject
 
-  VERSION = '0.0.1'
+  VERSION = '0.1.0'
 
   def self.inherited(subclass)
     subclass.send :extend,  ClassMethods
@@ -31,17 +31,6 @@ class OptionsHash::MethodObject
     def optional *keys, &block
       options.optional *keys, &block
     end
-
-    def options_reader *keys
-      keys.each do |key|
-        options.option?(key) or raise KeyError, "#{key} is not an option", caller(2)
-        define_method(key){ self.options[key] }
-      end
-    end
-
-    def option_readers!
-      options_reader *options.keys
-    end
   end
 
   module InstanceMethods
@@ -49,6 +38,15 @@ class OptionsHash::MethodObject
       @options = self.class.options.parse(options)
     end
     attr_reader :options
+
+    def method_missing method, *args, &block
+      return options[method] if options.keys.include?(method)
+      raise NoMethodError, "undefined method `#{method}'", caller(1)
+    end
+
+    def given? key
+      options.given? key
+    end
   end
 
 end

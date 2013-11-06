@@ -5,8 +5,6 @@ class CreatePerson < OptionsHash::MethodObject
   required :name
   optional :favorite_color, default: ->{ 'blue' }
 
-  options_reader :name, :favorite_color
-
   def call
     options
   end
@@ -16,8 +14,6 @@ end
 class CreateRobot < CreatePerson
 
   required :model_number
-
-  option_readers!
 
   def call
     [name, favorite_color, model_number]
